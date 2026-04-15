@@ -7,6 +7,8 @@ import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class UserTest {
 
@@ -22,6 +24,10 @@ public class UserTest {
         accessToken = response.jsonPath().getString("accessToken");
 
         assertEquals(200, response.statusCode());
+        assertTrue(response.jsonPath().getBoolean("success"));
+        assertNotNull(response.jsonPath().getString("accessToken"));
+        assertEquals("TestUser", response.jsonPath().getString("user.name"));
+        assertEquals(email, response.jsonPath().getString("user.email"));
     }
 
     @Test
@@ -35,6 +41,7 @@ public class UserTest {
         Response secondResponse = userClient.createUser(user);
 
         assertEquals(403, secondResponse.statusCode());
+        assertFalse(secondResponse.jsonPath().getBoolean("success"));
         assertEquals("User already exists", secondResponse.jsonPath().getString("message"));
     }
 
@@ -45,6 +52,7 @@ public class UserTest {
         Response response = userClient.createUser(user);
 
         assertEquals(403, response.statusCode());
+        assertFalse(response.jsonPath().getBoolean("success"));
         assertEquals("Email, password and name are required fields", response.jsonPath().getString("message"));
     }
 
@@ -53,15 +61,16 @@ public class UserTest {
         String email = "test" + System.currentTimeMillis() + "@mail.com";
         User user = new User(email, "password123", "TestUser");
 
-        // создаём пользователя
-        userClient.createUser(user);
+        Response createResponse = userClient.createUser(user);
+        accessToken = createResponse.jsonPath().getString("accessToken");
 
-        // логинимся
         Response response = userClient.loginUser(user);
 
-        accessToken = response.jsonPath().getString("accessToken");
-
         assertEquals(200, response.statusCode());
+        assertTrue(response.jsonPath().getBoolean("success"));
+        assertNotNull(response.jsonPath().getString("accessToken"));
+        assertEquals("TestUser", response.jsonPath().getString("user.name"));
+        assertEquals(email, response.jsonPath().getString("user.email"));
     }
 
     @Test
@@ -69,15 +78,15 @@ public class UserTest {
         String email = "test" + System.currentTimeMillis() + "@mail.com";
         User user = new User(email, "password123", "TestUser");
 
-        // создаём пользователя
-        userClient.createUser(user);
+        Response createResponse = userClient.createUser(user);
+        accessToken = createResponse.jsonPath().getString("accessToken");
 
-        // неправильный пароль
         User wrongUser = new User(email, "wrongPassword", "TestUser");
 
         Response response = userClient.loginUser(wrongUser);
 
         assertEquals(401, response.statusCode());
+        assertFalse(response.jsonPath().getBoolean("success"));
         assertEquals("email or password are incorrect", response.jsonPath().getString("message"));
     }
 
@@ -86,5 +95,9 @@ public class UserTest {
         if (accessToken != null) {
             userClient.deleteUser(accessToken);
         }
+    }
+
+    private void assertFalse(boolean condition) {
+        assertEquals(false, condition);
     }
 }

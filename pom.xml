@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://www.m...xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
@@ -12,21 +12,41 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <junit.version>4.13.2</junit.version>
+        <selenium.version>4.20.0</selenium.version>
+        <webdrivermanager.version>5.8.0</webdrivermanager.version>
         <restassured.version>5.5.0</restassured.version>
         <allure.version>2.29.1</allure.version>
         <aspectj.version>1.9.22.1</aspectj.version>
+        <jackson.version>2.17.2</jackson.version>
     </properties>
 
     <dependencies>
-        <!-- JUnit 4 -->
+        <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- RestAssured -->
+        <!-- Selenium -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- WebDriverManager -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- REST Assured -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -34,11 +54,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Jackson (JSON) -->
+        <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.17.2</version>
+            <version>${jackson.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -57,7 +77,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Allure Aspect -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-junit4-aspect</artifactId>
@@ -76,6 +95,7 @@
 
     <build>
         <plugins>
+            <!-- Surefire + Allure -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
