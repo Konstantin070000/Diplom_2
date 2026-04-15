@@ -16,15 +16,15 @@ public class LoginPage extends BasePage {
     }
 
     public void setEmail(String email) {
-        driver.findElement(emailField).sendKeys(email);
+        type(emailField, email);
     }
 
     public void setPassword(String password) {
-        driver.findElement(passwordField).sendKeys(password);
+        type(passwordField, password);
     }
 
     public void clickLoginButton() {
-        driver.findElement(loginButton).click();
+        click(loginButton);
     }
 
     public void login(String email, String password) {
@@ -34,10 +34,14 @@ public class LoginPage extends BasePage {
     }
 
     public void clickRegisterLink() {
-        driver.findElement(registerLink).click();
+        click(registerLink);
     }
 
     public void clickForgotPasswordLink() {
-        driver.findElement(forgotPasswordLink).click();
+        click(forgotPasswordLink);
+    }
+
+    public boolean isLoginButtonDisplayed() {
+        return isElementDisplayed(loginButton);
     }
 }

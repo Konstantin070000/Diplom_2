@@ -11,32 +11,53 @@ public class MainPage extends BasePage {
     private final By bunsTab = By.xpath("//span[text()='Булки']");
     private final By saucesTab = By.xpath("//span[text()='Соусы']");
     private final By fillingsTab = By.xpath("//span[text()='Начинки']");
+    private final By placeOrderButton = By.xpath("//button[text()='Оформить заказ']");
+
+    private final By activeBunsTab = By.xpath("//div[contains(@class,'tab_tab_type_current')]//span[text()='Булки']");
+    private final By activeSaucesTab = By.xpath("//div[contains(@class,'tab_tab_type_current')]//span[text()='Соусы']");
+    private final By activeFillingsTab = By.xpath("//div[contains(@class,'tab_tab_type_current')]//span[text()='Начинки']");
 
     public MainPage(WebDriver driver) {
         super(driver);
     }
 
     public void clickLoginButton() {
-        driver.findElement(loginButton).click();
+        click(loginButton);
     }
 
     public void clickPersonalAccount() {
-        driver.findElement(personalAccountButton).click();
+        click(personalAccountButton);
     }
 
     public void clickConstructor() {
-        driver.findElement(constructorButton).click();
+        click(constructorButton);
     }
 
     public void clickBuns() {
-        driver.findElement(bunsTab).click();
+        click(bunsTab);
     }
 
     public void clickSauces() {
-        driver.findElement(saucesTab).click();
+        click(saucesTab);
     }
 
     public void clickFillings() {
-        driver.findElement(fillingsTab).click();
+        click(fillingsTab);
+    }
+
+    public boolean isPlaceOrderButtonDisplayed() {
+        return isElementDisplayed(placeOrderButton);
+    }
+
+    public boolean isBunsTabActive() {
+        return isElementDisplayed(activeBunsTab);
+    }
+
+    public boolean isSaucesTabActive() {
+        return isElementDisplayed(activeSaucesTab);
+    }
+
+    public boolean isFillingsTabActive() {
+        return isElementDisplayed(activeFillingsTab);
     }
 }

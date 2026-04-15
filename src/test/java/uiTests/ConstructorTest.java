@@ -13,8 +13,8 @@ public class ConstructorTest extends BaseUiTest {
 
         mainPage.clickSauces();
 
-        assertTrue("После перехода в Соусы страница должна содержать текст Соусы",
-                driver.getPageSource().contains("Соусы"));
+        assertTrue("После перехода вкладка 'Соусы' должна стать активной",
+                mainPage.isSaucesTabActive());
     }
 
     @Test
@@ -23,8 +23,8 @@ public class ConstructorTest extends BaseUiTest {
 
         mainPage.clickFillings();
 
-        assertTrue("После перехода в Начинки страница должна содержать текст Начинки",
-                driver.getPageSource().contains("Начинки"));
+        assertTrue("После перехода вкладка 'Начинки' должна стать активной",
+                mainPage.isFillingsTabActive());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class ConstructorTest extends BaseUiTest {
         mainPage.clickSauces();
         mainPage.clickBuns();
 
-        assertTrue("После перехода в Булки страница должна содержать текст Булки",
-                driver.getPageSource().contains("Булки"));
+        assertTrue("После перехода вкладка 'Булки' должна стать активной",
+                mainPage.isBunsTabActive());
     }
 }

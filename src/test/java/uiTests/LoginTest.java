@@ -1,5 +1,9 @@
 package uiTests;
 
+import client.UserClient;
+import io.restassured.response.Response;
+import model.User;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import pages.ForgotPasswordPage;
@@ -11,12 +15,18 @@ import static org.junit.Assert.assertTrue;
 
 public class LoginTest extends BaseUiTest {
 
-    private final String email = "testlogin@example.com";
+    private final UserClient userClient = new UserClient();
+    private String accessToken;
+    private String email;
     private final String password = "password123";
 
     @Before
-    public void openLoginPage() {
-        driver.get(baseUrl);
+    public void createUser() {
+        email = "testlogin" + System.currentTimeMillis() + "@mail.com";
+        User user = new User(email, password, "TestUser");
+
+        Response response = userClient.createUser(user);
+        accessToken = response.jsonPath().getString("accessToken");
     }
 
     @Test
@@ -27,8 +37,8 @@ public class LoginTest extends BaseUiTest {
         mainPage.clickLoginButton();
         loginPage.login(email, password);
 
-        assertTrue("После логина должен отображаться текст Конструктор",
-                driver.getPageSource().contains("Конструктор"));
+        assertTrue("После логина должна отображаться кнопка 'Оформить заказ'",
+                mainPage.isPlaceOrderButtonDisplayed());
     }
 
     @Test
@@ -39,8 +49,8 @@ public class LoginTest extends BaseUiTest {
         mainPage.clickPersonalAccount();
         loginPage.login(email, password);
 
-        assertTrue("После логина должен отображаться текст Конструктор",
-                driver.getPageSource().contains("Конструктор"));
+        assertTrue("После логина должна отображаться кнопка 'Оформить заказ'",
+                mainPage.isPlaceOrderButtonDisplayed());
     }
 
     @Test
@@ -54,8 +64,8 @@ public class LoginTest extends BaseUiTest {
         registerPage.clickLoginLink();
         loginPage.login(email, password);
 
-        assertTrue("После логина должен отображаться текст Конструктор",
-                driver.getPageSource().contains("Конструктор"));
+        assertTrue("После логина должна отображаться кнопка 'Оформить заказ'",
+                mainPage.isPlaceOrderButtonDisplayed());
     }
 
     @Test
@@ -69,7 +79,14 @@ public class LoginTest extends BaseUiTest {
         forgotPasswordPage.clickLoginLink();
         loginPage.login(email, password);
 
-        assertTrue("После логина должен отображаться текст Конструктор",
-                driver.getPageSource().contains("Конструктор"));
+        assertTrue("После логина должна отображаться кнопка 'Оформить заказ'",
+                mainPage.isPlaceOrderButtonDisplayed());
+    }
+
+    @After
+    public void deleteUser() {
+        if (accessToken != null) {
+            userClient.deleteUser(accessToken);
+        }
     }
 }

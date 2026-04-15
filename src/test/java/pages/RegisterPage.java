@@ -17,19 +17,19 @@ public class RegisterPage extends BasePage {
     }
 
     public void setName(String name) {
-        driver.findElement(nameField).sendKeys(name);
+        type(nameField, name);
     }
 
     public void setEmail(String email) {
-        driver.findElement(emailField).sendKeys(email);
+        type(emailField, email);
     }
 
     public void setPassword(String password) {
-        driver.findElement(passwordField).sendKeys(password);
+        type(passwordField, password);
     }
 
     public void clickRegisterButton() {
-        driver.findElement(registerButton).click();
+        click(registerButton);
     }
 
     public void register(String name, String email, String password) {
@@ -40,10 +40,10 @@ public class RegisterPage extends BasePage {
     }
 
     public boolean isPasswordErrorDisplayed() {
-        return driver.findElement(passwordErrorText).isDisplayed();
+        return isElementDisplayed(passwordErrorText);
     }
 
     public void clickLoginLink() {
-        driver.findElement(loginLink).click();
+        click(loginLink);
     }
 }

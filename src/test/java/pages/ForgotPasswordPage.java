@@ -12,6 +12,6 @@ public class ForgotPasswordPage extends BasePage {
     }
 
     public void clickLoginLink() {
-        driver.findElement(loginLink).click();
+        click(loginLink);
     }
 }

@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class OrderTest {
 
@@ -35,6 +37,8 @@ public class OrderTest {
         Response response = orderClient.createOrderWithAuth(order, accessToken);
 
         assertEquals(200, response.statusCode());
+        assertTrue(response.jsonPath().getBoolean("success"));
+        assertNotNull(response.jsonPath().getString("order.number"));
     }
 
     @Test
@@ -47,6 +51,8 @@ public class OrderTest {
         Response response = orderClient.createOrder(order);
 
         assertEquals(200, response.statusCode());
+        assertTrue(response.jsonPath().getBoolean("success"));
+        assertNotNull(response.jsonPath().getString("order.number"));
     }
 
     @Test
@@ -56,6 +62,7 @@ public class OrderTest {
         Response response = orderClient.createOrder(order);
 
         assertEquals(400, response.statusCode());
+        assertEquals(false, response.jsonPath().getBoolean("success"));
         assertEquals("Ingredient ids must be provided", response.jsonPath().getString("message"));
     }
 
