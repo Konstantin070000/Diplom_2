@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.apache.http.HttpStatus.*;
 
 public class OrderTest {
 
@@ -39,7 +40,7 @@ public class OrderTest {
 
         Response response = orderClient.createOrderWithAuth(order, accessToken);
 
-        assertEquals(200, response.statusCode());
+        assertEquals(SC_OK, response.statusCode());
     }
 
     @Test
@@ -51,7 +52,7 @@ public class OrderTest {
 
         Response response = orderClient.createOrder(order);
 
-        assertEquals(200, response.statusCode());
+        assertEquals(SC_OK, response.statusCode());
     }
 
     @Test
@@ -60,7 +61,7 @@ public class OrderTest {
 
         Response response = orderClient.createOrder(order);
 
-        assertEquals(400, response.statusCode());
+        assertEquals(SC_BAD_REQUEST, response.statusCode());
         assertEquals("Ingredient ids must be provided", response.jsonPath().getString("message"));
     }
 
@@ -70,7 +71,7 @@ public class OrderTest {
 
         Response response = orderClient.createOrder(order);
 
-        assertEquals(500, response.statusCode());
+        assertEquals(SC_INTERNAL_SERVER_ERROR, response.statusCode());
     }
 
     @After
