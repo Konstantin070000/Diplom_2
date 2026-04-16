@@ -58,13 +58,40 @@ public class UserTest {
     }
 
     @Test
+    @DisplayName("Создание пользователя без пароля")
+    @Description("Проверяем, что создание пользователя без пароля возвращает ошибку")
+    public void createUserWithoutPasswordShouldReturnError() {
+        String email = "test" + System.currentTimeMillis() + "@mail.com";
+        User user = new User(email, null, "TestUser");
+
+        Response response = userClient.createUser(user);
+
+        assertEquals(SC_FORBIDDEN, response.statusCode());
+        assertEquals("Email, password and name are required fields", response.jsonPath().getString("message"));
+    }
+
+    @Test
+    @DisplayName("Создание пользователя без имени")
+    @Description("Проверяем, что создание пользователя без имени возвращает ошибку")
+    public void createUserWithoutNameShouldReturnError() {
+        String email = "test" + System.currentTimeMillis() + "@mail.com";
+        User user = new User(email, "password123", null);
+
+        Response response = userClient.createUser(user);
+
+        assertEquals(SC_FORBIDDEN, response.statusCode());
+        assertEquals("Email, password and name are required fields", response.jsonPath().getString("message"));
+    }
+
+    @Test
     @DisplayName("Авторизация существующего пользователя")
     @Description("Проверяем, что существующий пользователь может успешно авторизоваться")
     public void loginUserShouldReturnSuccess() {
         String email = "test" + System.currentTimeMillis() + "@mail.com";
         User user = new User(email, "password123", "TestUser");
 
-        userClient.createUser(user);
+        Response createResponse = userClient.createUser(user);
+        accessToken = createResponse.jsonPath().getString("accessToken");
 
         Response response = userClient.loginUser(user);
         accessToken = response.jsonPath().getString("accessToken");
