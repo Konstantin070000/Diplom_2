@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import model.LoginData;
 import model.User;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -16,31 +17,39 @@ public class UserTest {
 
     private final UserClient userClient = new UserClient();
     private String accessToken;
+    private User loginUser;
+
+    @Before
+    public void setUp() {
+        String email = "test" + System.currentTimeMillis() + "@mail.com";
+        loginUser = new User(email, "password123", "TestUser");
+
+        Response createResponse = userClient.createUser(loginUser);
+        accessToken = createResponse.jsonPath().getString("accessToken");
+    }
 
     @Test
     @DisplayName("Создание уникального пользователя")
     @Description("Проверяем, что можно успешно создать нового уникального пользователя")
     public void createUniqueUserShouldReturnSuccess() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
+        String email = "unique" + System.currentTimeMillis() + "@mail.com";
         User user = new User(email, "password123", "TestUser");
 
         Response response = userClient.createUser(user);
-        accessToken = response.jsonPath().getString("accessToken");
+        String createdAccessToken = response.jsonPath().getString("accessToken");
 
         assertEquals(SC_OK, response.statusCode());
+
+        if (createdAccessToken != null) {
+            userClient.deleteUser(createdAccessToken);
+        }
     }
 
     @Test
     @DisplayName("Создание дублирующего пользователя")
     @Description("Проверяем, что повторное создание уже существующего пользователя возвращает ошибку")
     public void createDuplicateUserShouldReturnError() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
-        User user = new User(email, "password123", "TestUser");
-
-        Response firstResponse = userClient.createUser(user);
-        accessToken = firstResponse.jsonPath().getString("accessToken");
-
-        Response secondResponse = userClient.createUser(user);
+        Response secondResponse = userClient.createUser(loginUser);
 
         assertEquals(SC_FORBIDDEN, secondResponse.statusCode());
         assertEquals("User already exists", secondResponse.jsonPath().getString("message"));
@@ -62,8 +71,7 @@ public class UserTest {
     @DisplayName("Создание пользователя без пароля")
     @Description("Проверяем, что создание пользователя без пароля возвращает ошибку")
     public void createUserWithoutPasswordShouldReturnError() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
-        User user = new User(email, null, "TestUser");
+        User user = new User("test" + System.currentTimeMillis() + "@mail.com", null, "TestUser");
 
         Response response = userClient.createUser(user);
 
@@ -75,8 +83,7 @@ public class UserTest {
     @DisplayName("Создание пользователя без имени")
     @Description("Проверяем, что создание пользователя без имени возвращает ошибку")
     public void createUserWithoutNameShouldReturnError() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
-        User user = new User(email, "password123", null);
+        User user = new User("test" + System.currentTimeMillis() + "@mail.com", "password123", null);
 
         Response response = userClient.createUser(user);
 
@@ -88,13 +95,7 @@ public class UserTest {
     @DisplayName("Авторизация существующего пользователя")
     @Description("Проверяем, что существующий пользователь может успешно авторизоваться")
     public void loginUserShouldReturnSuccess() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
-        User user = new User(email, "password123", "TestUser");
-
-        Response createResponse = userClient.createUser(user);
-        accessToken = createResponse.jsonPath().getString("accessToken");
-
-        LoginData loginData = new LoginData(email, "password123");
+        LoginData loginData = new LoginData(loginUser.getEmail(), loginUser.getPassword());
         Response response = userClient.loginUser(loginData);
 
         assertEquals(SC_OK, response.statusCode());
@@ -104,13 +105,18 @@ public class UserTest {
     @DisplayName("Авторизация с неверным паролем")
     @Description("Проверяем, что при неверном пароле возвращается ошибка авторизации")
     public void loginWithWrongPasswordShouldReturnError() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
-        User user = new User(email, "password123", "TestUser");
+        LoginData wrongLoginData = new LoginData(loginUser.getEmail(), "wrongPassword");
+        Response response = userClient.loginUser(wrongLoginData);
 
-        Response createResponse = userClient.createUser(user);
-        accessToken = createResponse.jsonPath().getString("accessToken");
+        assertEquals(SC_UNAUTHORIZED, response.statusCode());
+        assertEquals("email or password are incorrect", response.jsonPath().getString("message"));
+    }
 
-        LoginData wrongLoginData = new LoginData(email, "wrongPassword");
+    @Test
+    @DisplayName("Авторизация с неверным логином")
+    @Description("Проверяем, что при неверном email возвращается ошибка авторизации")
+    public void loginWithWrongEmailShouldReturnError() {
+        LoginData wrongLoginData = new LoginData("wrong_" + loginUser.getEmail(), loginUser.getPassword());
         Response response = userClient.loginUser(wrongLoginData);
 
         assertEquals(SC_UNAUTHORIZED, response.statusCode());

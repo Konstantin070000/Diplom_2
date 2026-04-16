@@ -1,0 +1,8 @@
+model/Order.class
+tests/UserTest.class
+model/User.class
+client/BaseClient.class
+tests/OrderTest.class
+model/LoginData.class
+client/UserClient.class
+client/OrderClient.class
