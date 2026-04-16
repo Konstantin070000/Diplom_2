@@ -4,6 +4,7 @@ import client.UserClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
+import model.LoginData;
 import model.User;
 import org.junit.After;
 import org.junit.Test;
@@ -93,8 +94,8 @@ public class UserTest {
         Response createResponse = userClient.createUser(user);
         accessToken = createResponse.jsonPath().getString("accessToken");
 
-        Response response = userClient.loginUser(user);
-        accessToken = response.jsonPath().getString("accessToken");
+        LoginData loginData = new LoginData(email, "password123");
+        Response response = userClient.loginUser(loginData);
 
         assertEquals(SC_OK, response.statusCode());
     }
@@ -109,9 +110,8 @@ public class UserTest {
         Response createResponse = userClient.createUser(user);
         accessToken = createResponse.jsonPath().getString("accessToken");
 
-        User wrongUser = new User(email, "wrongPassword", "TestUser");
-
-        Response response = userClient.loginUser(wrongUser);
+        LoginData wrongLoginData = new LoginData(email, "wrongPassword");
+        Response response = userClient.loginUser(wrongLoginData);
 
         assertEquals(SC_UNAUTHORIZED, response.statusCode());
         assertEquals("email or password are incorrect", response.jsonPath().getString("message"));
