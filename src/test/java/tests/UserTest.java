@@ -9,9 +9,10 @@ import model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import utils.UserGenerator;
 
-import static org.junit.Assert.assertEquals;
 import static org.apache.http.HttpStatus.*;
+import static org.junit.Assert.assertEquals;
 
 public class UserTest {
 
@@ -21,8 +22,7 @@ public class UserTest {
 
     @Before
     public void setUp() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
-        loginUser = new User(email, "password123", "TestUser");
+        loginUser = UserGenerator.getRandomUser();
 
         Response createResponse = userClient.createUser(loginUser);
         accessToken = createResponse.jsonPath().getString("accessToken");
@@ -32,8 +32,7 @@ public class UserTest {
     @DisplayName("Создание уникального пользователя")
     @Description("Проверяем, что можно успешно создать нового уникального пользователя")
     public void createUniqueUserShouldReturnSuccess() {
-        String email = "unique" + System.currentTimeMillis() + "@mail.com";
-        User user = new User(email, "password123", "TestUser");
+        User user = UserGenerator.getRandomUser();
 
         Response response = userClient.createUser(user);
         String createdAccessToken = response.jsonPath().getString("accessToken");
@@ -71,7 +70,7 @@ public class UserTest {
     @DisplayName("Создание пользователя без пароля")
     @Description("Проверяем, что создание пользователя без пароля возвращает ошибку")
     public void createUserWithoutPasswordShouldReturnError() {
-        User user = new User("test" + System.currentTimeMillis() + "@mail.com", null, "TestUser");
+        User user = new User(UserGenerator.getRandomUser().getEmail(), null, "TestUser");
 
         Response response = userClient.createUser(user);
 
@@ -83,7 +82,7 @@ public class UserTest {
     @DisplayName("Создание пользователя без имени")
     @Description("Проверяем, что создание пользователя без имени возвращает ошибку")
     public void createUserWithoutNameShouldReturnError() {
-        User user = new User("test" + System.currentTimeMillis() + "@mail.com", "password123", null);
+        User user = new User(UserGenerator.getRandomUser().getEmail(), "password123", null);
 
         Response response = userClient.createUser(user);
 
@@ -95,7 +94,7 @@ public class UserTest {
     @DisplayName("Авторизация существующего пользователя")
     @Description("Проверяем, что существующий пользователь может успешно авторизоваться")
     public void loginUserShouldReturnSuccess() {
-        LoginData loginData = new LoginData(loginUser.getEmail(), loginUser.getPassword());
+        LoginData loginData = UserGenerator.getLoginData(loginUser);
         Response response = userClient.loginUser(loginData);
 
         assertEquals(SC_OK, response.statusCode());
