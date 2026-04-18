@@ -10,12 +10,13 @@ import model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import utils.UserGenerator;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
 import static org.apache.http.HttpStatus.*;
+import static org.junit.Assert.assertEquals;
 
 public class OrderTest {
 
@@ -26,8 +27,7 @@ public class OrderTest {
 
     @Before
     public void setUp() {
-        String email = "test" + System.currentTimeMillis() + "@mail.com";
-        user = new User(email, "password123", "TestUser");
+        user = UserGenerator.getRandomUser();
 
         Response createUserResponse = userClient.createUser(user);
         accessToken = createUserResponse.jsonPath().getString("accessToken");
