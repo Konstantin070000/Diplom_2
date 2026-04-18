@@ -18,6 +18,7 @@ public class UserTest {
 
     private final UserClient userClient = new UserClient();
     private String accessToken;
+    private String createdAccessToken;
     private User loginUser;
 
     @Before
@@ -35,13 +36,9 @@ public class UserTest {
         User user = UserGenerator.getRandomUser();
 
         Response response = userClient.createUser(user);
-        String createdAccessToken = response.jsonPath().getString("accessToken");
+        createdAccessToken = response.jsonPath().getString("accessToken");
 
         assertEquals(SC_OK, response.statusCode());
-
-        if (createdAccessToken != null) {
-            userClient.deleteUser(createdAccessToken);
-        }
     }
 
     @Test
@@ -126,6 +123,9 @@ public class UserTest {
     public void cleanUp() {
         if (accessToken != null) {
             userClient.deleteUser(accessToken);
+        }
+        if (createdAccessToken != null) {
+            userClient.deleteUser(createdAccessToken);
         }
     }
 }
